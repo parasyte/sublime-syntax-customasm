@@ -18,6 +18,7 @@ contexts:
     - include: operators
     - include: labels
     - include: functions
+    - include: variables
 
   comments:
     - match: ';'
@@ -56,7 +57,6 @@ contexts:
           scope: punctuation.section.block.end.customasm
           pop: true
         - include: main
-
 
   interpolation:
     - match: '(\{)\s*(\w+)\s*((:)\s*(\w+))?\s*(\})'
@@ -128,3 +128,7 @@ contexts:
         - match: '\)'
           scope: punctuation.section.parens.end.customasm
           pop: true
+
+  variables:
+    - match: 'pc|\$'
+      scope: variable.other.constant.customasm
