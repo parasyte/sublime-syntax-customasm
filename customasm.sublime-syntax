@@ -88,6 +88,26 @@ contexts:
         - match: '\]'
           scope: punctuation.section.brackets.end.customasm
           pop: true
+    - match: '\?'
+      scope: keyword.control.conditional.if.customasm
+      push:
+        - match: ':'
+          scope: keyword.control.conditional.else.customasm
+          pop: true
+        - match: '$\n?'
+          pop: true
+        - include: strings
+        - include: numbers
+        - include: operators
+        - include: variables
+    - match: '\('
+      scope: punctuation.section.parens.begin.customasm
+      push:
+        - meta_scope: meta.parens.customasm
+        - include: main
+        - match: '\)'
+          scope: punctuation.section.parens.end.customasm
+          pop: true
     - match: '=>?'
       scope: keyword.operator.assignment.customasm
     - match: ':'
@@ -125,6 +145,7 @@ contexts:
         - include: numbers
         - include: strings
         - include: operators
+        - include: variables
         - match: '\)'
           scope: punctuation.section.parens.end.customasm
           pop: true
