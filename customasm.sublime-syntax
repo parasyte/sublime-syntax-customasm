@@ -1,0 +1,130 @@
+%YAML 1.2
+---
+name: customasm
+file_extensions:
+  - asm
+  - casm
+scope: source.customasm
+version: 2
+
+contexts:
+  main:
+    - include: comments
+    - include: strings
+    - include: directives
+    - include: asm
+    - include: interpolation
+    - include: numbers
+    - include: operators
+    - include: labels
+    - include: functions
+
+  comments:
+    - match: ';'
+      scope: punctuation.definition.comment.customasm
+      push:
+        - meta_scope: comment.line.customasm
+        - match: '$\n?'
+          pop: true
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.customasm
+      push:
+        - meta_scope: string.quoted.double.customasm
+        - match: '\.'
+          scope: constant.character.escape.customasm
+        - match: '"'
+          scope: punctuation.definition.string.end.customasm
+          pop: true
+
+  directives:
+    - match: '^\s*(#)(\w+)\s*(\w+)?'
+      captures:
+        1: punctuation.definition.annotation.customasm
+        2: keyword.operator.word.customasm
+        3: storage.type.customasm
+
+  asm:
+    - match: '(asm)\s*(\{)'
+      captures:
+        1: keyword.declaration.class.customasm
+        2: punctuation.section.block.begin.customasm
+      push:
+        - meta_scope: meta.block.customasm
+        - match: '\}'
+          scope: punctuation.section.block.end.customasm
+          pop: true
+        - include: main
+
+
+  interpolation:
+    - match: '(\{)\s*(\w+)\s*((:)\s*(\w+))?\s*(\})'
+      captures:
+        1: keyword.context.block.customasm
+        2: variable.other.constant.customasm
+        4: punctuation.separator.customasm
+        5: storage.type.customasm
+        6: keyword.context.block.customasm
+
+  numbers:
+    - match: '\b0x[A-Fa-f\d_]+\b'
+      scope: constant.numeric.integer.hexadecimal.customasm
+    - match: '\b0o[0-7_]+\b'
+      scope: constant.numeric.integer.octal.customasm
+    - match: '\b0b[01_]+\b'
+      scope: constant.numeric.integer.binary.customasm
+    - match: '\b(\d|_)+\b'
+      scope: constant.numeric.integer.customasm
+
+  operators:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.customasm
+      push:
+        - meta_scope: meta.brackets.customasm
+        - include: numbers
+        - match: ':'
+          scope: punctuation.separator.customasm
+        - match: '\]'
+          scope: punctuation.section.brackets.end.customasm
+          pop: true
+    - match: '=>?'
+      scope: keyword.operator.assignment.customasm
+    - match: ':'
+      scope: punctuation.separator.customasm
+    - match: ','
+      scope: punctuation.separator.sequence.customasm
+    - match: '[=!<>]=|[<>]|&&|\|\|'
+      scope: keyword.operator.logical.customasm
+    - match: '(<<|>>|[&^\|])'
+      scope: keyword.operator.bitwise.customasm
+    - match: '[!~`\*/%+\-@]'
+      scope: keyword.operator.arithmetic.customasm
+    - match: '\{'
+      scope: punctuation.section.block.begin.customasm
+    - match: '\}'
+      scope: punctuation.section.block.end.customasm
+
+  labels:
+    - match: '^\s*(\w+)(:)'
+      captures:
+        1: entity.name.label.global.customasm
+        2: punctuation.terminator.customasm
+    - match: '^\s*(\.\w+)(:)'
+      captures:
+        1: entity.name.label.local.customasm
+        2: punctuation.terminator.customasm
+
+  functions:
+    - match: '(\w+)(\()'
+      captures:
+        1: variable.function.customasm
+        2: punctuation.section.parens.begin.customasm
+      push:
+        - meta_scope: meta.function.customasm
+        - include: numbers
+        - include: strings
+        - include: operators
+        - match: '\)'
+          scope: punctuation.section.parens.end.customasm
+          pop: true
