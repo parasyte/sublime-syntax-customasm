@@ -78,8 +78,10 @@ contexts:
       scope: constant.numeric.integer.customasm
 
   operators:
-    - match: '\['
-      scope: punctuation.section.brackets.begin.customasm
+    - match: '(\w+)(\[)'
+      captures:
+        1: variable.other.constant.customasm
+        2: punctuation.section.brackets.begin.customasm
       push:
         - meta_scope: meta.brackets.customasm
         - include: numbers
